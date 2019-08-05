@@ -156,3 +156,36 @@ Route::get('/show_post_comment', function () {
 		echo $post->title . ', isi komentar = ' . $comment->body . ', oleh - '. $comment->user->name . '<br>';
 	}
 });
+
+Route::get('/create_tags', function () {
+	DB::table('tags')->insert([
+		['name' => 'Tag 1'],
+		['name' => 'Tag 2'],
+		['name' => 'Tag 3'],
+		['name' => 'Tag 4'],
+		['name' => 'Tag 5'],
+	]);
+	return 'Tags created';
+});
+
+Route::get('/create_post_tags', function () {
+	$user = User::findOrFail(1);
+	$user->posts()->create([
+		'title' => 'Title 1 dengan tags',
+		'body' => 'Body 1 dengan tags'
+	])->tags()->attach([1,2,4]);
+	return 'Post with tags created';
+});
+
+Route::get('/show_post_with_tags', function () {
+	$post = Post::findOrFail(5);
+	foreach ($post->tags as $tag) {
+		echo 'Title -> '. $post->title . $tag->name . '<br>';
+	}
+});
+
+Route::get('/update_post_tags', function () {
+	$post = Post::findOrFail(5);
+	$post->tags()->sync([2,3,5]);
+	return redirect('show_post_with_tags');
+});
